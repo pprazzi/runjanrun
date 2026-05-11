@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#e05c2a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="5K Loop">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>5K Loopschema</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0e1116;
+    --bg-elev: #181c25;
+    --bg-elev-2: #232836;
+    --ink: #f5f3ee;
+    --muted: #8a8da0;
+    --border: #2a2f3d;
+    --run: #ff6a35;
+    --run-soft: rgba(255, 106, 53, 0.14);
+    --walk: #4f9eff;
+    --walk-soft: rgba(79, 158, 255, 0.14);
+    --rest: #6b7080;
+    --rest-soft: rgba(107, 112, 128, 0.14);
+    --done: #34c98e;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bot: env(safe-area-inset-bottom, 0px);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    overscroll-behavior-y: none;
+  }
+
+  body {
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button {
+    font-family: inherit;
+    color: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .screen {
+    display: none;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bot);
+  }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* =========================== SELECTION SCREEN =========================== */
+  #screen-select { padding: 18px 18px 100px; }
+
+  .app-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .app-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    line-height: 1.05;
+  }
+  .app-title .accent { color: var(--run); }
+  .app-sub {
+    color: var(--muted);
+    font-size: 12px;
+    text-align: right;
+  }
+
+  .progress-track {
+    display: flex;
+    gap: 4px;
+    margin: 16px 0 22px;
+  }
+  .progress-seg {
+    flex: 1;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--run);
+  }
+
+  .week-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 14px 12px;
+    margin-bottom: 12px;
+  }
+  .week-card-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .week-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+  }
+  .week-name {
+    font-size: 12.5px;
+    color: var(--muted);
+    flex: 1;
+  }
+  .week-focus {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--run);
+    font-weight: 600;
+  }
+  .week-focus.rest { color: var(--walk); }
+  .week-focus.finish { color: var(--done); }
+
+  .session-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .session-chip {
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+    transition: transform 0.1s, background 0.15s;
+    min-height: 56px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+  }
+  .session-chip:active { transform: scale(0.97); background: var(--bg); }
+  .session-chip .letter {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+  }
+  .session-chip .dur {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* =========================== DETAIL SCREEN =========================== */
+  #screen-detail { padding: 18px 18px 110px; }
+
+  .top-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .back-btn {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    font-size: 20px;
+  }
+  .top-bar .title-block { flex: 1; min-width: 0; }
+  .top-bar .title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    line-height: 1.1;
+  }
+  .top-bar .subtitle {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .summary-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .summary-tile {
+    flex: 1;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .summary-tile .lbl {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+  }
+  .summary-tile .val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 19px;
+    margin-top: 2px;
+  }
+
+  .segment-list { display: flex; flex-direction: column; gap: 6px; }
+  .seg-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 10px;
+    align-items: center;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 12px;
+  }
+  .seg-row.run { border-left-color: var(--run); }
+  .seg-row.walk { border-left-color: var(--walk); }
+  .seg-row.rest { border-left-color: var(--rest); }
+  .seg-row.run .seg-badge { background: var(--run-soft); color: var(--run); }
+  .seg-row.walk .seg-badge { background: var(--walk-soft); color: var(--walk); }
+  .seg-row.rest .seg-badge { background: var(--rest-soft); color: var(--rest); }
+
+  .seg-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: 4px;
+  }
+  .seg-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .seg-info .line1 {
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .seg-info .line2 {
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+  .seg-dur {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+  }
+
+  .start-bar {
+    position: fixed;
+    left: 0; right: 0;
+    bottom: 0;
+    padding: 14px 16px calc(14px + var(--safe-bot));
+    background: linear-gradient(to top, var(--bg) 70%, transparent);
+  }
+  .start-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--run);
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(255, 106, 53, 0.35);
+    transition: transform 0.1s;
+  }
+  .start-btn:active { transform: scale(0.98); }
+
+  /* =========================== SESSION SCREEN =========================== */
+  #screen-run {
+    background: var(--bg);
+    transition: background 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+  #screen-run.is-run { background: linear-gradient(165deg, #1a0d08 0%, var(--bg) 60%); }
+  #screen-run.is-walk { background: linear-gradient(165deg, #081421 0%, var(--bg) 60%); }
+  #screen-run.is-rest { background: var(--bg); }
+
+  .run-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px 8px;
+  }
+  .run-meta {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .run-meta strong { color: var(--ink); font-weight: 600; }
+  .stop-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--bg-elev);
+    color: var(--muted);
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+    border: 1px solid var(--border);
+  }
+
+  .progress-overall {
+    height: 3px;
+    background: var(--bg-elev);
+    margin: 4px 18px 0;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-overall .fill {
+    height: 100%;
+    background: var(--run);
+    width: 0%;
+    transition: width 0.25s linear;
+  }
+
+  .run-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    gap: 14px;
+    text-align: center;
+  }
+
+  .seg-type-label {
+    font-family: 'DM Serif Display', serif;
+    font-size: 30px;
+    letter-spacing: 0.02em;
+    transition: color 0.3s;
+  }
+  .seg-type-label.run { color: var(--run); }
+  .seg-type-label.walk { color: var(--walk); }
+  .seg-type-label.rest { color: var(--rest); }
+
+  .countdown {
+    font-family: 'DM Sans', monospace;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    font-size: clamp(72px, 22vw, 110px);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+  .countdown.urgent {
+    animation: pulse 1s ease-in-out infinite;
+    color: var(--run);
+  }
+  @keyframes pulse {
+    50% { transform: scale(1.04); opacity: 0.85; }
+  }
+
+  .stat-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 380px;
+  }
+  .stat-tile {
+    flex: 1;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 8px;
+  }
+  .stat-tile .lbl {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+  .stat-tile .val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    margin-top: 4px;
+  }
+  .stat-tile .unit {
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 2px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .note-box {
+    min-height: 1em;
+    color: var(--muted);
+    font-size: 13px;
+    font-style: italic;
+    max-width: 380px;
+  }
+
+  .next-up {
+    margin-top: auto;
+    padding: 14px 18px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-elev);
+  }
+  .next-up .lbl {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 3px;
+  }
+  .next-up .desc {
+    font-size: 13px;
+  }
+  .next-up.is-final .desc { color: var(--done); font-weight: 600; }
+
+  .control-bar {
+    display: flex;
+    gap: 10px;
+    padding: 12px 16px calc(12px + var(--safe-bot));
+    background: var(--bg);
+  }
+  .ctrl-btn {
+    flex: 1;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+  }
+  .pause-btn {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .pause-btn.paused { background: var(--run); color: white; }
+
+  /* Flash overlay */
+  .flash-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 50;
+  }
+  .flash-overlay.run { background: var(--run); }
+  .flash-overlay.walk { background: var(--walk); }
+  .flash-overlay.flash { animation: flash 0.5s ease-out; }
+  @keyframes flash {
+    0% { opacity: 0; }
+    20% { opacity: 0.55; }
+    100% { opacity: 0; }
+  }
+
+  /* Done overlay */
+  .done-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(14, 17, 22, 0.96);
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    text-align: center;
+    gap: 16px;
+  }
+  .done-overlay.active { display: flex; }
+  .done-overlay .badge {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: var(--done);
+    color: white;
+    display: grid;
+    place-items: center;
+    font-size: 44px;
+    margin-bottom: 8px;
+  }
+  .done-overlay h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 30px;
+  }
+  .done-overlay p {
+    color: var(--muted);
+  }
+  .done-overlay button {
+    margin-top: 20px;
+    padding: 14px 32px;
+    background: var(--run);
+    color: white;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  /* Pause overlay */
+  .pause-veil {
+    position: absolute;
+    inset: 0;
+    background: rgba(14, 17, 22, 0.65);
+    backdrop-filter: blur(2px);
+    z-index: 10;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .pause-veil.active { display: flex; }
+  .pause-veil .icon { font-size: 48px; }
+  .pause-veil .lbl {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================ SELECTION ============================ -->
+<section id="screen-select" class="screen active">
+  <div class="app-header">
+    <h1 class="app-title">5K <span class="accent">Loopschema</span></h1>
+    <div class="app-sub">Loopband · 6:02/km<br>≤143 bpm</div>
+  </div>
+  <div class="progress-track" id="progress-track"></div>
+  <div id="week-list"></div>
+</section>
+
+<!-- ============================ DETAIL ============================ -->
+<section id="screen-detail" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" id="back-to-select" aria-label="Terug">‹</button>
+    <div class="title-block">
+      <div class="title" id="detail-title">Week — · Sessie —</div>
+      <div class="subtitle" id="detail-subtitle">—</div>
+    </div>
+  </div>
+  <div class="summary-row">
+    <div class="summary-tile">
+      <div class="lbl">Totaal</div>
+      <div class="val" id="detail-total">— min</div>
+    </div>
+    <div class="summary-tile">
+      <div class="lbl">Loopblokken</div>
+      <div class="val" id="detail-runs">—</div>
+    </div>
+    <div class="summary-tile">
+      <div class="lbl">Loop tempo</div>
+      <div class="val" id="detail-pace">—</div>
+    </div>
+  </div>
+  <div class="segment-list" id="segment-list"></div>
+  <div class="start-bar">
+    <button class="start-btn" id="start-session-btn">START SESSIE</button>
+  </div>
+</section>
+
+<!-- ============================ SESSION ============================ -->
+<section id="screen-run" class="screen">
+  <div class="run-header">
+    <div class="run-meta">
+      <strong id="run-week">—</strong> · <span id="run-step">— / —</span>
+    </div>
+    <button class="stop-btn" id="stop-session-btn" aria-label="Stop sessie">✕</button>
+  </div>
+  <div class="progress-overall"><div class="fill" id="run-progress-fill"></div></div>
+
+  <div class="run-main">
+    <div class="seg-type-label" id="seg-label">—</div>
+    <div class="countdown" id="countdown">00:00</div>
+    <div class="stat-row">
+      <div class="stat-tile">
+        <div class="lbl">Snelheid</div>
+        <div class="val"><span id="stat-speed">—</span><span class="unit">km/h</span></div>
+      </div>
+      <div class="stat-tile">
+        <div class="lbl">Hartslag</div>
+        <div class="val">≤<span id="stat-hr">—</span><span class="unit">bpm</span></div>
+      </div>
+    </div>
+    <div class="note-box" id="seg-note"></div>
+  </div>
+
+  <div class="next-up" id="next-up">
+    <div class="lbl">Volgend</div>
+    <div class="desc" id="next-desc">—</div>
+  </div>
+
+  <div class="control-bar">
+    <button class="ctrl-btn pause-btn" id="pause-btn">PAUZE</button>
+  </div>
+
+  <div class="pause-veil" id="pause-veil">
+    <div class="icon">⏸</div>
+    <div class="lbl">Gepauzeerd</div>
+  </div>
+</section>
+
+<div class="flash-overlay" id="flash-overlay"></div>
+
+<div class="done-overlay" id="done-overlay">
+  <div class="badge">✓</div>
+  <h2>Sessie voltooid</h2>
+  <p id="done-summary">—</p>
+  <button id="done-back">TERUG NAAR OVERZICHT</button>
+</div>
+
+<script>
+'use strict';
+
+/* =========================================================
+   SCHEMA-DATA — uitgevouwen segmenten per (week, sessie).
+   "× N herhalen" → N totale loopblokken; structuur per blok:
+   warmup walk + N×(run + herstel walk) + cooldown walk.
+   ========================================================= */
+
+const WARMUP = (note='opwarmen') => ({ type:'walk', minutes:5, speed:5.5, hr:100, note });
+const COOLDOWN = (note='uitlopen') => ({ type:'rest', minutes:5, speed:5.0, hr:100, note });
+const HERSTEL = (m=2) => ({ type:'walk', minutes:m, speed:5.5, hr:110, note:'herstel' });
+
+function intervalSession(runMin, runSpeed, runHr, count, walkMin=2, runNote='') {
+  const segs = [WARMUP()];
+  for (let i = 0; i < count; i++) {
+    segs.push({ type:'run', minutes:runMin, speed:runSpeed, hr:runHr, note: runNote });
+    segs.push(HERSTEL(walkMin));
+  }
+  segs.push(COOLDOWN());
+  return segs;
+}
+
+const WEEKS = [
+  {
+    n: 1,
+    name: 'Voeten terug op de band',
+    focus: 'Basis opbouwen',
+    sessions: {
+      A: { plan: intervalSession(2, 8.5, 135, 5, 2, 'rustig aanvoelen') },
+      B: { plan: intervalSession(2, 8.5, 135, 5, 2, 'rustig aanvoelen'),
+           hint: 'Mag 0,5 km/h trager als hartslag te hoog' },
+      C: { plan: intervalSession(2, 8.5, 135, 6, 2) }
+    }
+  },
+  {
+    n: 2,
+    name: 'Loopblokken groeien',
+    focus: 'Uithouding +',
+    sessions: {
+      A: { plan: intervalSession(3, 8.5, 138, 5, 2) },
+      B: { plan: intervalSession(3, 8.5, 138, 5, 2) },
+      C: { plan: intervalSession(4, 8.5, 138, 4, 2) }
+    }
+  },
+  {
+    n: 3,
+    name: 'Langere loopstukken',
+    focus: 'Tempo lichtjes op',
+    sessions: {
+      A: { plan: intervalSession(5, 9.0, 140, 3, 2) },
+      B: { plan: intervalSession(5, 9.0, 140, 3, 2) },
+      C: { plan: intervalSession(7, 9.0, 140, 2, 2) }
+    }
+  },
+  {
+    n: 4,
+    name: 'Lichtere herstelweek — lichaam laten adapteren',
+    focus: 'Recuperatie',
+    focusKind: 'rest',
+    sessions: {
+      A: { plan: intervalSession(4, 8.5, 135, 3, 2, 'comfortabel') },
+      B: { plan: intervalSession(4, 8.5, 135, 3, 2, 'comfortabel') },
+      C: { plan: intervalSession(4, 8.5, 135, 3, 2, 'comfortabel') }
+    }
+  },
+  {
+    n: 5,
+    name: 'Doeltempo aankloppen',
+    focus: 'Opbouw fase 2',
+    sessions: {
+      A: { plan: intervalSession(8, 9.5, 142, 2, 2) },
+      B: { plan: intervalSession(8, 9.5, 142, 2, 2) },
+      C: { plan: intervalSession(10, 9.5, 142, 2, 3) }
+    }
+  },
+  {
+    n: 6,
+    name: 'Langste loopstukken van het schema',
+    focus: 'Piekweek',
+    sessions: {
+      A: { plan: [
+        WARMUP(),
+        { type:'run', minutes:12, speed:9.8, hr:143 },
+        HERSTEL(3),
+        { type:'run', minutes:10, speed:9.8, hr:143 },
+        COOLDOWN()
+      ]},
+      B: { plan: [
+        WARMUP(),
+        { type:'run', minutes:12, speed:9.8, hr:143 },
+        HERSTEL(3),
+        { type:'run', minutes:10, speed:9.8, hr:143 },
+        COOLDOWN()
+      ]},
+      C: { plan: [
+        WARMUP(),
+        { type:'run', minutes:15, speed:9.8, hr:143 },
+        HERSTEL(3),
+        { type:'run', minutes:12, speed:9.8, hr:143, note:'bijna 5K!' },
+        COOLDOWN()
+      ]}
+    }
+  },
+  {
+    n: 7,
+    name: 'Non-stop lopen consolideren',
+    focus: 'Doeltempo',
+    sessions: {
+      A: { plan: [
+        WARMUP(),
+        { type:'run', minutes:25, speed:9.9, hr:143, note:'eerste keer non-stop!' },
+        COOLDOWN()
+      ]},
+      B: { plan: [
+        WARMUP(),
+        { type:'run', minutes:23, speed:9.9, hr:143, note:'iets trager mag — herstelloop' },
+        COOLDOWN()
+      ]},
+      C: { plan: [
+        WARMUP(),
+        { type:'run', minutes:30, speed:9.9, hr:143, note:'≈ 5K!' },
+        COOLDOWN()
+      ]}
+    }
+  },
+  {
+    n: 8,
+    name: 'De afronding',
+    focus: '5K afronden ✓',
+    focusKind: 'finish',
+    sessions: {
+      A: { plan: [
+        WARMUP(),
+        { type:'run', minutes:25, speed:9.9, hr:143, note:'vlot, comfortabel' },
+        COOLDOWN()
+      ]},
+      B: { plan: [
+        WARMUP(),
+        { type:'run', minutes:22, speed:9.5, hr:138, note:'rustiger — benen fris houden' },
+        COOLDOWN()
+      ]},
+      C: { plan: [
+        WARMUP(),
+        { type:'run', minutes:30, speed:9.9, hr:143, note:'5 km non-stop aan doeltempo' },
+        { type:'rest', minutes:5, speed:5.0, hr:100, note:'genieten' }
+      ], title:'5K Finisher'}
+    }
+  }
+];
+
+/* ============================ HELPERS ============================ */
+const fmtMin = (m) => `${Math.round(m)}`;
+const fmtMmSs = (sec) => {
+  sec = Math.max(0, Math.ceil(sec));
+  const mm = String(Math.floor(sec / 60)).padStart(2, '0');
+  const ss = String(sec % 60).padStart(2, '0');
+  return `${mm}:${ss}`;
+};
+const planDuration = (plan) => plan.reduce((a, s) => a + s.minutes, 0);
+const planRunCount = (plan) => plan.filter(s => s.type === 'run').length;
+const planRunSpeed = (plan) => {
+  const runs = plan.filter(s => s.type === 'run');
+  if (!runs.length) return '—';
+  const speeds = [...new Set(runs.map(r => r.speed))].sort((a, b) => a - b);
+  if (speeds.length === 1) return `${speeds[0].toString().replace('.', ',')} km/h`;
+  return `${speeds[0]}–${speeds[speeds.length-1]} km/h`.replace(/\./g, ',');
+};
+const segLabel = (t) => t === 'run' ? 'LOPEN' : (t === 'walk' ? 'WANDELEN' : 'UITLOPEN');
+const segNice = (t) => t === 'run' ? 'Lopen' : (t === 'walk' ? 'Wandelen' : 'Uitlopen');
+
+/* ============================ DOM REFS ============================ */
+const $ = (sel) => document.querySelector(sel);
+const screens = {
+  select: $('#screen-select'),
+  detail: $('#screen-detail'),
+  run: $('#screen-run')
+};
+const showScreen = (key) => {
+  Object.values(screens).forEach(s => s.classList.remove('active'));
+  screens[key].classList.add('active');
+  window.scrollTo(0, 0);
+};
+
+/* ============================ SELECTION SCREEN ============================ */
+function renderSelection() {
+  const track = $('#progress-track');
+  track.innerHTML = '';
+  WEEKS.forEach((w, i) => {
+    const seg = document.createElement('div');
+    seg.className = 'progress-seg';
+    seg.style.opacity = String(0.25 + 0.1 * i);
+    track.appendChild(seg);
+  });
+
+  const list = $('#week-list');
+  list.innerHTML = '';
+  WEEKS.forEach(week => {
+    const card = document.createElement('div');
+    card.className = 'week-card';
+    const focusClass = week.focusKind === 'rest' ? 'rest'
+                     : week.focusKind === 'finish' ? 'finish' : '';
+    card.innerHTML = `
+      <div class="week-card-head">
+        <div class="week-num">Week ${week.n}</div>
+        <div class="week-name">${week.name}</div>
+        <div class="week-focus ${focusClass}">${week.focus}</div>
+      </div>
+      <div class="session-row" data-week="${week.n}"></div>
+    `;
+    const row = card.querySelector('.session-row');
+    ['A', 'B', 'C'].forEach(letter => {
+      const sess = week.sessions[letter];
+      const chip = document.createElement('button');
+      chip.className = 'session-chip';
+      chip.innerHTML = `
+        <div class="letter">${letter}</div>
+        <div class="dur">${fmtMin(planDuration(sess.plan))} min</div>
+      `;
+      chip.addEventListener('click', () => openDetail(week.n, letter));
+      row.appendChild(chip);
+    });
+    list.appendChild(card);
+  });
+}
+
+/* ============================ DETAIL SCREEN ============================ */
+let currentDetail = null;
+
+function openDetail(weekN, letter) {
+  const week = WEEKS.find(w => w.n === weekN);
+  const sess = week.sessions[letter];
+  currentDetail = { weekN, letter, plan: sess.plan };
+
+  $('#detail-title').textContent = sess.title
+    ? `Week ${weekN} · ${sess.title}`
+    : `Week ${weekN} · Sessie ${letter}`;
+  $('#detail-subtitle').textContent = `${week.name} — ${week.focus}`;
+  $('#detail-total').textContent = `${fmtMin(planDuration(sess.plan))} min`;
+  $('#detail-runs').textContent = String(planRunCount(sess.plan));
+  $('#detail-pace').textContent = planRunSpeed(sess.plan);
+
+  const list = $('#segment-list');
+  list.innerHTML = '';
+  sess.plan.forEach(seg => {
+    const row = document.createElement('div');
+    row.className = `seg-row ${seg.type}`;
+    const labelTxt = seg.type === 'run' ? 'LOOP' : (seg.type === 'walk' ? 'WANDEL' : 'EIND');
+    const speedStr = String(seg.speed).replace('.', ',');
+    const noteStr = seg.note ? ` · ${seg.note}` : '';
+    row.innerHTML = `
+      <div class="seg-badge">${labelTxt}</div>
+      <div class="seg-info">
+        <div class="line1">${speedStr} km/h${noteStr ? '' : ''}</div>
+        <div class="line2">≤${seg.hr} bpm${noteStr}</div>
+      </div>
+      <div class="seg-dur">${seg.minutes}'</div>
+    `;
+    list.appendChild(row);
+  });
+
+  showScreen('detail');
+}
+
+$('#back-to-select').addEventListener('click', () => {
+  showScreen('select');
+});
+
+$('#start-session-btn').addEventListener('click', () => {
+  if (!currentDetail) return;
+  startSession(currentDetail);
+});
+
+/* ============================ SESSION ENGINE ============================ */
+class SessionEngine {
+  constructor(plan, callbacks) {
+    this.plan = plan;
+    this.cb = callbacks;
+    this.idx = 0;
+    this.totalSec = plan.reduce((a, s) => a + s.minutes * 60, 0);
+    this.elapsedBeforeCurrent = 0;
+    this.currentRemainingSec = plan[0].minutes * 60;
+    this.lastTickAt = null;
+    this.running = false;
+    this.timerId = null;
+  }
+  start() {
+    this.running = true;
+    this.lastTickAt = performance.now();
+    this._scheduleNext();
+    this.cb.onSegmentEnter(this._snapshot(), { first: true });
+  }
+  pause() {
+    if (!this.running) return;
+    this._consumeDelta();
+    this.running = false;
+    if (this.timerId) { clearTimeout(this.timerId); this.timerId = null; }
+    this.cb.onPaused();
+  }
+  resume() {
+    if (this.running) return;
+    this.running = true;
+    this.lastTickAt = performance.now();
+    this._scheduleNext();
+    this.cb.onResumed();
+  }
+  stop() {
+    this.running = false;
+    if (this.timerId) { clearTimeout(this.timerId); this.timerId = null; }
+  }
+  _scheduleNext() {
+    if (!this.running) return;
+    this.timerId = setTimeout(() => this._tick(), 200);
+  }
+  _consumeDelta() {
+    if (this.lastTickAt == null) return;
+    const now = performance.now();
+    const dt = (now - this.lastTickAt) / 1000;
+    this.lastTickAt = now;
+    this.currentRemainingSec -= dt;
+  }
+  _tick() {
+    if (!this.running) return;
+    this._consumeDelta();
+    while (this.currentRemainingSec <= 0 && this.idx < this.plan.length - 1) {
+      const overflow = -this.currentRemainingSec;
+      this.elapsedBeforeCurrent += this.plan[this.idx].minutes * 60;
+      this.idx += 1;
+      this.currentRemainingSec = this.plan[this.idx].minutes * 60 - overflow;
+      this.cb.onSegmentEnter(this._snapshot(), { first: false });
+    }
+    if (this.currentRemainingSec <= 0 && this.idx === this.plan.length - 1) {
+      this.currentRemainingSec = 0;
+      this.running = false;
+      this.cb.onTick(this._snapshot());
+      this.cb.onComplete(this._snapshot());
+      return;
+    }
+    this.cb.onTick(this._snapshot());
+    this._scheduleNext();
+  }
+  _snapshot() {
+    const seg = this.plan[this.idx];
+    const next = this.plan[this.idx + 1] || null;
+    const totalElapsed = this.elapsedBeforeCurrent + (seg.minutes * 60 - this.currentRemainingSec);
+    return {
+      idx: this.idx,
+      total: this.plan.length,
+      seg,
+      next,
+      remaining: this.currentRemainingSec,
+      progress: Math.min(1, Math.max(0, totalElapsed / this.totalSec)),
+      totalElapsed
+    };
+  }
+}
+
+/* ============================ SESSION CONTROLLER ============================ */
+let engine = null;
+let wakeLock = null;
+let currentSessionMeta = null;
+
+async function acquireWakeLock() {
+  if (!('wakeLock' in navigator)) return;
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release', () => { wakeLock = null; });
+  } catch (e) { /* user denied or unsupported */ }
+}
+function releaseWakeLock() {
+  if (wakeLock) {
+    try { wakeLock.release(); } catch (e) {}
+    wakeLock = null;
+  }
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && engine && engine.running && !wakeLock) {
+    acquireWakeLock();
+  }
+});
+
+function vibratePattern(pattern) {
+  if ('vibrate' in navigator) {
+    try { navigator.vibrate(pattern); } catch (e) {}
+  }
+}
+
+function flashScreen(type) {
+  const f = $('#flash-overlay');
+  f.classList.remove('run', 'walk', 'flash');
+  void f.offsetWidth;
+  f.classList.add(type === 'run' ? 'run' : 'walk', 'flash');
+}
+
+function applyBackgroundClass(type) {
+  const el = $('#screen-run');
+  el.classList.remove('is-run', 'is-walk', 'is-rest');
+  el.classList.add('is-' + type);
+}
+
+function renderSnapshot(snap) {
+  const seg = snap.seg;
+  $('#seg-label').textContent = segLabel(seg.type);
+  $('#seg-label').className = 'seg-type-label ' + seg.type;
+  $('#countdown').textContent = fmtMmSs(snap.remaining);
+  $('#countdown').classList.toggle('urgent', snap.remaining <= 3 && snap.remaining > 0);
+  $('#stat-speed').textContent = String(seg.speed).replace('.', ',');
+  $('#stat-hr').textContent = String(seg.hr);
+  $('#seg-note').textContent = seg.note || '';
+  $('#run-step').textContent = `${snap.idx + 1} / ${snap.total}`;
+  $('#run-progress-fill').style.width = (snap.progress * 100).toFixed(1) + '%';
+
+  if (snap.next) {
+    const ns = snap.next;
+    $('#next-up').classList.remove('is-final');
+    $('#next-desc').textContent = `${segNice(ns.type)} · ${String(ns.speed).replace('.', ',')} km/h · ${ns.minutes}:00`;
+  } else {
+    $('#next-up').classList.add('is-final');
+    $('#next-desc').textContent = 'Laatste onderdeel — afronden!';
+  }
+}
+
+function startSession(detail) {
+  const week = WEEKS.find(w => w.n === detail.weekN);
+  const letter = detail.letter;
+  const sess = week.sessions[letter];
+  currentSessionMeta = {
+    label: sess.title
+      ? `Week ${week.n} · ${sess.title}`
+      : `Week ${week.n} · Sessie ${letter}`,
+    startedAt: Date.now()
+  };
+
+  $('#run-week').textContent = currentSessionMeta.label;
+  $('#pause-veil').classList.remove('active');
+  const pauseBtn = $('#pause-btn');
+  pauseBtn.textContent = 'PAUZE';
+  pauseBtn.classList.remove('paused');
+
+  engine = new SessionEngine(detail.plan, {
+    onSegmentEnter: (snap, info) => {
+      applyBackgroundClass(snap.seg.type);
+      renderSnapshot(snap);
+      if (!info.first) {
+        vibratePattern([180, 100, 180, 100, 220]);
+        if (snap.seg.type === 'run' || snap.seg.type === 'walk') flashScreen(snap.seg.type);
+      } else {
+        vibratePattern([120]);
+      }
+    },
+    onTick: (snap) => renderSnapshot(snap),
+    onPaused: () => {
+      $('#pause-veil').classList.add('active');
+      pauseBtn.textContent = 'HERVATTEN';
+      pauseBtn.classList.add('paused');
+      releaseWakeLock();
+    },
+    onResumed: () => {
+      $('#pause-veil').classList.remove('active');
+      pauseBtn.textContent = 'PAUZE';
+      pauseBtn.classList.remove('paused');
+      acquireWakeLock();
+    },
+    onComplete: (snap) => {
+      vibratePattern([300, 120, 300, 120, 600]);
+      releaseWakeLock();
+      const totalMin = Math.round(snap.totalElapsed / 60);
+      $('#done-summary').textContent = `${currentSessionMeta.label} · ${totalMin} min`;
+      $('#done-overlay').classList.add('active');
+    }
+  });
+
+  showScreen('run');
+  acquireWakeLock();
+  engine.start();
+}
+
+$('#pause-btn').addEventListener('click', () => {
+  if (!engine) return;
+  if (engine.running) engine.pause();
+  else engine.resume();
+});
+
+$('#stop-session-btn').addEventListener('click', () => {
+  if (!engine) return;
+  if (!confirm('Sessie afbreken?')) return;
+  engine.stop();
+  releaseWakeLock();
+  engine = null;
+  showScreen('detail');
+});
+
+$('#done-back').addEventListener('click', () => {
+  $('#done-overlay').classList.remove('active');
+  engine = null;
+  showScreen('select');
+});
+
+/* ============================ INIT ============================ */
+renderSelection();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => { /* offline-ok */ });
+  });
+}
+</script>
+</body>
+</html>
