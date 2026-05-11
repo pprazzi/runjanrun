@@ -18,7 +18,8 @@
     --bg-elev: #181c25;
     --bg-elev-2: #232836;
     --ink: #f5f3ee;
-    --muted: #8a8da0;
+    --muted: #b5b9c8;
+    --muted-strong: #d6d9e3;
     --border: #2a2f3d;
     --run: #ff6a35;
     --run-soft: rgba(255, 106, 53, 0.14);
@@ -295,24 +296,25 @@
     padding: 14px 18px 8px;
   }
   .run-meta {
-    font-size: 12.5px;
-    color: var(--muted);
+    font-size: 17px;
+    color: var(--muted-strong);
+    font-weight: 500;
   }
-  .run-meta strong { color: var(--ink); font-weight: 600; }
+  .run-meta strong { color: var(--ink); font-weight: 700; }
   .stop-btn {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: var(--bg-elev);
-    color: var(--muted);
+    color: var(--muted-strong);
     display: grid;
     place-items: center;
-    font-size: 16px;
+    font-size: 20px;
     border: 1px solid var(--border);
   }
 
   .progress-overall {
-    height: 3px;
+    height: 4px;
     background: var(--bg-elev);
     margin: 4px 18px 0;
     border-radius: 2px;
@@ -330,17 +332,17 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 12px 24px;
-    gap: 14px;
+    justify-content: space-evenly;
+    padding: 8px 20px 12px;
     text-align: center;
   }
 
   .seg-type-label {
     font-family: 'DM Serif Display', serif;
-    font-size: 30px;
+    font-size: clamp(38px, 11vw, 56px);
     letter-spacing: 0.02em;
     transition: color 0.3s;
+    line-height: 1;
   }
   .seg-type-label.run { color: var(--run); }
   .seg-type-label.walk { color: var(--walk); }
@@ -350,9 +352,9 @@
     font-family: 'DM Sans', monospace;
     font-variant-numeric: tabular-nums;
     font-weight: 700;
-    font-size: clamp(72px, 22vw, 110px);
-    line-height: 0.95;
-    letter-spacing: -0.02em;
+    font-size: clamp(120px, 36vw, 200px);
+    line-height: 0.92;
+    letter-spacing: -0.03em;
   }
   .countdown.urgent {
     animation: pulse 1s ease-in-out infinite;
@@ -364,74 +366,81 @@
 
   .stat-row {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     width: 100%;
-    max-width: 380px;
+    max-width: 480px;
   }
   .stat-tile {
     flex: 1;
     background: var(--bg-elev);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 8px;
+    border-radius: 14px;
+    padding: 14px 8px;
   }
   .stat-tile .lbl {
-    font-size: 10px;
-    color: var(--muted);
+    font-size: 13px;
+    color: var(--muted-strong);
     text-transform: uppercase;
     letter-spacing: 0.07em;
+    font-weight: 600;
   }
   .stat-tile .val {
     font-family: 'DM Serif Display', serif;
-    font-size: 22px;
-    margin-top: 4px;
+    font-size: clamp(30px, 8vw, 40px);
+    margin-top: 6px;
+    line-height: 1;
   }
   .stat-tile .unit {
-    font-size: 11px;
+    font-size: 14px;
     color: var(--muted);
-    margin-left: 2px;
+    margin-left: 4px;
     font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
   }
 
   .note-box {
     min-height: 1em;
-    color: var(--muted);
-    font-size: 13px;
+    color: var(--muted-strong);
+    font-size: 17px;
     font-style: italic;
-    max-width: 380px;
+    max-width: 460px;
+    font-weight: 500;
   }
+  .note-box:empty { min-height: 0; }
 
   .next-up {
-    margin-top: auto;
     padding: 14px 18px;
     border-top: 1px solid var(--border);
     background: var(--bg-elev);
   }
   .next-up .lbl {
-    font-size: 10px;
+    font-size: 12px;
     color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 0.07em;
-    margin-bottom: 3px;
+    margin-bottom: 4px;
+    font-weight: 600;
   }
   .next-up .desc {
-    font-size: 13px;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--ink);
   }
-  .next-up.is-final .desc { color: var(--done); font-weight: 600; }
+  .next-up.is-final .desc { color: var(--done); font-weight: 700; }
 
   .control-bar {
     display: flex;
     gap: 10px;
-    padding: 12px 16px calc(12px + var(--safe-bot));
+    padding: 12px 16px calc(14px + var(--safe-bot));
     background: var(--bg);
   }
   .ctrl-btn {
     flex: 1;
-    padding: 16px;
-    border-radius: 12px;
-    font-size: 16px;
+    padding: 20px;
+    border-radius: 14px;
+    font-size: 19px;
     font-weight: 700;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.05em;
   }
   .pause-btn {
     background: var(--ink);
@@ -502,7 +511,7 @@
   /* Pause overlay */
   .pause-veil {
     position: absolute;
-    inset: 0 0 96px 0;
+    inset: 0 0 110px 0;
     background: rgba(14, 17, 22, 0.65);
     backdrop-filter: blur(2px);
     z-index: 10;
@@ -516,10 +525,10 @@
   .pause-veil.active { display: flex; }
   .control-bar { position: relative; z-index: 20; }
   .run-header { position: relative; z-index: 20; }
-  .pause-veil .icon { font-size: 48px; }
+  .pause-veil .icon { font-size: 64px; }
   .pause-veil .lbl {
     font-family: 'DM Serif Display', serif;
-    font-size: 22px;
+    font-size: 30px;
   }
 </style>
 </head>
