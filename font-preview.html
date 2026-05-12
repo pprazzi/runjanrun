@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Font keuze · 5K Loopschema</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --bg: #0e1116;
+    --bg-elev: #181c25;
+    --bg-elev-2: #232836;
+    --ink: #f5f3ee;
+    --muted: #b5b9c8;
+    --muted-strong: #d6d9e3;
+    --border: #2a2f3d;
+    --run: #ff6a35;
+    --walk: #4f9eff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: #060810;
+    color: var(--ink);
+    font-family: 'DM Sans', system-ui, sans-serif;
+    padding: 18px 14px 60px;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .intro {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 22px;
+    line-height: 1.5;
+  }
+
+  /* Option label above each card */
+  .opt-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 30px 4px 8px;
+    gap: 8px;
+  }
+  .opt-num {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    background: var(--run);
+    color: white;
+    padding: 3px 9px;
+    border-radius: 14px;
+    letter-spacing: 0.05em;
+  }
+  .opt-name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    flex: 1;
+  }
+  .opt-tag {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* Card mimics phone session screen */
+  .card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.4);
+    margin-bottom: 6px;
+  }
+  .card-inner {
+    padding: 16px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--muted-strong);
+    font-size: 14px;
+  }
+  .meta-row strong { color: var(--ink); font-weight: 700; }
+  .stop-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg-elev);
+    color: var(--muted-strong);
+    display: grid;
+    place-items: center;
+    font-size: 15px;
+    border: 1px solid var(--border);
+  }
+  .progress {
+    height: 3px;
+    background: var(--bg-elev);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress > div { height: 100%; width: 8%; background: var(--run); }
+
+  .seg-label {
+    text-align: center;
+    font-size: 38px;
+    color: var(--walk);
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+  .timer {
+    text-align: center;
+    font-size: 92px;
+    font-weight: 700;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .stats {
+    display: flex;
+    gap: 10px;
+  }
+  .tile {
+    flex: 1;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 10px;
+    text-align: center;
+  }
+  .tile .lbl {
+    font-size: 11px;
+    color: var(--muted-strong);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .tile .val {
+    font-size: 26px;
+    margin-top: 3px;
+    line-height: 1;
+  }
+  .tile .unit {
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: 3px;
+    font-weight: 500;
+  }
+  .note {
+    text-align: center;
+    color: var(--muted-strong);
+    font-size: 14px;
+    font-style: italic;
+    font-weight: 500;
+  }
+  .nextup {
+    background: var(--bg-elev);
+    border-top: 1px solid var(--border);
+    padding: 12px 18px;
+  }
+  .nextup .lbl {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 2px;
+    font-weight: 600;
+  }
+  .nextup .desc {
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  /* ============= OPTION 1: huidig — DM Serif Display + DM Sans ============= */
+  .opt1 .seg-label,
+  .opt1 .tile .val { font-family: 'DM Serif Display', serif; }
+  .opt1 .timer { font-family: 'DM Sans', sans-serif; }
+  .opt1 .meta-row, .opt1 .nextup, .opt1 .note, .opt1 .tile .lbl,
+  .opt1 .tile .unit { font-family: 'DM Sans', sans-serif; }
+
+  /* ============= OPTION 2: Inter — clean / Apple-stijl ============= */
+  .opt2 * { font-family: 'Inter', system-ui, sans-serif; }
+  .opt2 .seg-label { font-weight: 800; font-size: 36px; letter-spacing: 0.04em; }
+  .opt2 .timer { font-weight: 800; letter-spacing: -0.04em; }
+  .opt2 .tile .val { font-weight: 700; }
+  .opt2 .nextup .desc { font-weight: 700; }
+
+  /* ============= OPTION 3: Space Grotesk + JetBrains Mono (tech timer) ============= */
+  .opt3 * { font-family: 'Space Grotesk', sans-serif; }
+  .opt3 .seg-label { font-weight: 700; font-size: 36px; }
+  .opt3 .timer { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 84px; }
+  .opt3 .tile .val { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 24px; }
+
+  /* ============= OPTION 4: Archivo Black + Archivo (sporty / stadium) ============= */
+  .opt4 * { font-family: 'Archivo', sans-serif; }
+  .opt4 .seg-label { font-family: 'Archivo Black', sans-serif; font-size: 36px; letter-spacing: 0.04em; }
+  .opt4 .timer { font-family: 'Archivo Black', sans-serif; letter-spacing: -0.04em; font-size: 96px; }
+  .opt4 .tile .val { font-family: 'Archivo Black', sans-serif; font-weight: 400; }
+  .opt4 .nextup .desc { font-weight: 700; }
+
+  /* ============= OPTION 5: Bricolage Grotesque (variabel / trendy) ============= */
+  .opt5 * { font-family: 'Bricolage Grotesque', sans-serif; }
+  .opt5 .seg-label { font-weight: 800; font-size: 38px; letter-spacing: 0; font-stretch: 70%; }
+  .opt5 .timer { font-weight: 800; font-stretch: 80%; letter-spacing: -0.03em; }
+  .opt5 .tile .val { font-weight: 700; }
+  .opt5 .nextup .desc { font-weight: 700; }
+
+  @media (min-width: 720px) {
+    body { max-width: 460px; margin: 0 auto; }
+  }
+</style>
+</head>
+<body>
+<h1>Lettertype-keuze</h1>
+<p class="intro">Vijf opties voor het sessiescherm. Elke kaart toont dezelfde inhoud in een andere fontcombinatie zodat je ze kunt vergelijken. Laat me weten welke je wil.</p>
+
+<!-- ===== OPTION 1 ===== -->
+<div class="opt-label">
+  <span class="opt-num">1</span>
+  <span class="opt-name">DM Serif Display + DM Sans</span>
+  <span class="opt-tag">huidig · editorial</span>
+</div>
+<div class="card opt1">
+  <div class="card-inner">
+    <div class="meta-row"><span><strong>Week 2 · Sessie B</strong> · 1 / 12</span><span class="stop-btn">✕</span></div>
+    <div class="progress"><div></div></div>
+    <div class="seg-label">WANDELEN</div>
+    <div class="timer">04:49</div>
+    <div class="stats">
+      <div class="tile"><div class="lbl">SNELHEID</div><div class="val">5,5<span class="unit">km/h</span></div></div>
+      <div class="tile"><div class="lbl">HARTSLAG</div><div class="val">≤100<span class="unit">bpm</span></div></div>
+    </div>
+    <div class="note">opwarmen</div>
+  </div>
+  <div class="nextup"><div class="lbl">Volgend</div><div class="desc">Lopen · 8,5 km/h · 3:00</div></div>
+</div>
+
+<!-- ===== OPTION 2 ===== -->
+<div class="opt-label">
+  <span class="opt-num">2</span>
+  <span class="opt-name">Inter</span>
+  <span class="opt-tag">clean · Apple-stijl</span>
+</div>
+<div class="card opt2">
+  <div class="card-inner">
+    <div class="meta-row"><span><strong>Week 2 · Sessie B</strong> · 1 / 12</span><span class="stop-btn">✕</span></div>
+    <div class="progress"><div></div></div>
+    <div class="seg-label">WANDELEN</div>
+    <div class="timer">04:49</div>
+    <div class="stats">
+      <div class="tile"><div class="lbl">SNELHEID</div><div class="val">5,5<span class="unit">km/h</span></div></div>
+      <div class="tile"><div class="lbl">HARTSLAG</div><div class="val">≤100<span class="unit">bpm</span></div></div>
+    </div>
+    <div class="note">opwarmen</div>
+  </div>
+  <div class="nextup"><div class="lbl">Volgend</div><div class="desc">Lopen · 8,5 km/h · 3:00</div></div>
+</div>
+
+<!-- ===== OPTION 3 ===== -->
+<div class="opt-label">
+  <span class="opt-num">3</span>
+  <span class="opt-name">Space Grotesk + JetBrains Mono</span>
+  <span class="opt-tag">tech · monospaced timer</span>
+</div>
+<div class="card opt3">
+  <div class="card-inner">
+    <div class="meta-row"><span><strong>Week 2 · Sessie B</strong> · 1 / 12</span><span class="stop-btn">✕</span></div>
+    <div class="progress"><div></div></div>
+    <div class="seg-label">WANDELEN</div>
+    <div class="timer">04:49</div>
+    <div class="stats">
+      <div class="tile"><div class="lbl">SNELHEID</div><div class="val">5,5<span class="unit">km/h</span></div></div>
+      <div class="tile"><div class="lbl">HARTSLAG</div><div class="val">≤100<span class="unit">bpm</span></div></div>
+    </div>
+    <div class="note">opwarmen</div>
+  </div>
+  <div class="nextup"><div class="lbl">Volgend</div><div class="desc">Lopen · 8,5 km/h · 3:00</div></div>
+</div>
+
+<!-- ===== OPTION 4 ===== -->
+<div class="opt-label">
+  <span class="opt-num">4</span>
+  <span class="opt-name">Archivo Black + Archivo</span>
+  <span class="opt-tag">sporty · stadium-vibe</span>
+</div>
+<div class="card opt4">
+  <div class="card-inner">
+    <div class="meta-row"><span><strong>Week 2 · Sessie B</strong> · 1 / 12</span><span class="stop-btn">✕</span></div>
+    <div class="progress"><div></div></div>
+    <div class="seg-label">WANDELEN</div>
+    <div class="timer">04:49</div>
+    <div class="stats">
+      <div class="tile"><div class="lbl">SNELHEID</div><div class="val">5,5<span class="unit">km/h</span></div></div>
+      <div class="tile"><div class="lbl">HARTSLAG</div><div class="val">≤100<span class="unit">bpm</span></div></div>
+    </div>
+    <div class="note">opwarmen</div>
+  </div>
+  <div class="nextup"><div class="lbl">Volgend</div><div class="desc">Lopen · 8,5 km/h · 3:00</div></div>
+</div>
+
+<!-- ===== OPTION 5 ===== -->
+<div class="opt-label">
+  <span class="opt-num">5</span>
+  <span class="opt-name">Bricolage Grotesque</span>
+  <span class="opt-tag">trendy · variabele breedte</span>
+</div>
+<div class="card opt5">
+  <div class="card-inner">
+    <div class="meta-row"><span><strong>Week 2 · Sessie B</strong> · 1 / 12</span><span class="stop-btn">✕</span></div>
+    <div class="progress"><div></div></div>
+    <div class="seg-label">WANDELEN</div>
+    <div class="timer">04:49</div>
+    <div class="stats">
+      <div class="tile"><div class="lbl">SNELHEID</div><div class="val">5,5<span class="unit">km/h</span></div></div>
+      <div class="tile"><div class="lbl">HARTSLAG</div><div class="val">≤100<span class="unit">bpm</span></div></div>
+    </div>
+    <div class="note">opwarmen</div>
+  </div>
+  <div class="nextup"><div class="lbl">Volgend</div><div class="desc">Lopen · 8,5 km/h · 3:00</div></div>
+</div>
+
+</body>
+</html>

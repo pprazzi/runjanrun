@@ -1,4 +1,4 @@
-const CACHE = '5k-loop-v3';
+const CACHE = '5k-loop-v4';
 const ASSETS = [
   './',
   './index.html',
