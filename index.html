@@ -642,7 +642,9 @@ function intervalSession(runMin, runSpeed, runHr, count, walkMin=2, runNote='') 
   const segs = [WARMUP()];
   for (let i = 0; i < count; i++) {
     segs.push({ type:'run', minutes:runMin, speed:runSpeed, hr:runHr, note: runNote });
-    segs.push(HERSTEL(walkMin));
+    // Geen herstel-wandel na de laatste loop: die zou meteen overgaan
+    // in de cooldown-wandel (2 wandelstukken na elkaar).
+    if (i < count - 1) segs.push(HERSTEL(walkMin));
   }
   segs.push(COOLDOWN());
   return segs;
