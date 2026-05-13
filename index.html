@@ -136,27 +136,57 @@
     gap: 8px;
   }
   .session-chip {
+    position: relative;
     background: var(--bg-elev-2);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 8px;
+    border-radius: 12px;
+    padding: 14px 8px 12px;
     text-align: center;
     transition: transform 0.1s, background 0.15s;
-    min-height: 56px;
+    min-height: 112px;
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
-    gap: 2px;
+    gap: 0;
   }
   .session-chip:active { transform: scale(0.97); background: var(--bg); }
   .session-chip .letter {
-    font-family: 'Space Grotesk', sans-serif; font-weight: 700;
-    font-size: 18px;
-  }
-  .session-chip .dur {
-    font-size: 11px;
+    position: absolute;
+    top: 8px;
+    left: 11px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
     color: var(--muted);
+    letter-spacing: 0.08em;
   }
+  .session-chip .total {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .session-chip .total-lbl {
+    font-size: 10.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+    font-weight: 600;
+  }
+  .session-chip .split {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 10px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+  .session-chip .split .r { color: var(--run); }
+  .session-chip .split .w { color: var(--walk); }
 
   /* =========================== DETAIL SCREEN =========================== */
   #screen-detail { padding: 18px 18px 110px; }
@@ -787,6 +817,8 @@ const fmtMmSs = (sec) => {
   return `${mm}:${ss}`;
 };
 const planDuration = (plan) => plan.reduce((a, s) => a + s.minutes, 0);
+const planRunMin = (plan) => plan.filter(s => s.type === 'run').reduce((a, s) => a + s.minutes, 0);
+const planWalkMin = (plan) => plan.filter(s => s.type === 'walk' || s.type === 'rest').reduce((a, s) => a + s.minutes, 0);
 const planRunCount = (plan) => plan.filter(s => s.type === 'run').length;
 const planRunSpeed = (plan) => {
   const runs = plan.filter(s => s.type === 'run');
@@ -842,9 +874,14 @@ function renderSelection() {
       const sess = week.sessions[letter];
       const chip = document.createElement('button');
       chip.className = 'session-chip';
+      const total = planDuration(sess.plan);
+      const runM  = planRunMin(sess.plan);
+      const walkM = planWalkMin(sess.plan);
       chip.innerHTML = `
         <div class="letter">${letter}</div>
-        <div class="dur">${fmtMin(planDuration(sess.plan))} min</div>
+        <div class="total">${total}</div>
+        <div class="total-lbl">min</div>
+        <div class="split"><span class="r">${runM}</span> · <span class="w">${walkM}</span></div>
       `;
       chip.addEventListener('click', () => openDetail(week.n, letter));
       row.appendChild(chip);
