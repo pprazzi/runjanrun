@@ -566,7 +566,7 @@
 <section id="screen-select" class="screen active">
   <div class="app-header">
     <h1 class="app-title">5K <span class="accent">Loopschema</span></h1>
-    <div class="app-sub">Loopband · 6:02/km<br>≤143 bpm</div>
+    <div class="app-sub">Loopband · 10 km/h<br>6:00/km · ≤143 bpm</div>
   </div>
   <div class="progress-track" id="progress-track"></div>
   <div id="week-list"></div>
@@ -736,23 +736,23 @@ const WEEKS = [
     sessions: {
       A: { plan: [
         WARMUP(),
-        { type:'run', minutes:12, speed:9.8, hr:143 },
+        { type:'run', minutes:12, speed:9.5, hr:143 },
         HERSTEL(3),
-        { type:'run', minutes:10, speed:9.8, hr:143 },
+        { type:'run', minutes:10, speed:9.5, hr:143 },
         COOLDOWN()
       ]},
       B: { plan: [
         WARMUP(),
-        { type:'run', minutes:12, speed:9.8, hr:143 },
+        { type:'run', minutes:12, speed:9.5, hr:143 },
         HERSTEL(3),
-        { type:'run', minutes:10, speed:9.8, hr:143 },
+        { type:'run', minutes:10, speed:9.5, hr:143 },
         COOLDOWN()
       ]},
       C: { plan: [
         WARMUP(),
-        { type:'run', minutes:15, speed:9.8, hr:143 },
+        { type:'run', minutes:15, speed:9.5, hr:143 },
         HERSTEL(3),
-        { type:'run', minutes:12, speed:9.8, hr:143, note:'bijna 5K!' },
+        { type:'run', minutes:12, speed:9.5, hr:143, note:'bijna 5K!' },
         COOLDOWN()
       ]}
     }
@@ -764,17 +764,17 @@ const WEEKS = [
     sessions: {
       A: { plan: [
         WARMUP(),
-        { type:'run', minutes:25, speed:9.9, hr:143, note:'eerste keer non-stop!' },
+        { type:'run', minutes:25, speed:10, hr:143, note:'eerste keer non-stop!' },
         COOLDOWN()
       ]},
       B: { plan: [
         WARMUP(),
-        { type:'run', minutes:23, speed:9.9, hr:143, note:'iets trager mag — herstelloop' },
+        { type:'run', minutes:23, speed:10, hr:143, note:'iets trager mag — herstelloop' },
         COOLDOWN()
       ]},
       C: { plan: [
         WARMUP(),
-        { type:'run', minutes:30, speed:9.9, hr:143, note:'≈ 5K!' },
+        { type:'run', minutes:30, speed:10, hr:143, note:'≈ 5K!' },
         COOLDOWN()
       ]}
     }
@@ -787,7 +787,7 @@ const WEEKS = [
     sessions: {
       A: { plan: [
         WARMUP(),
-        { type:'run', minutes:25, speed:9.9, hr:143, note:'vlot, comfortabel' },
+        { type:'run', minutes:25, speed:10, hr:143, note:'vlot, comfortabel' },
         COOLDOWN()
       ]},
       B: { plan: [
@@ -797,7 +797,7 @@ const WEEKS = [
       ]},
       C: { plan: [
         WARMUP(),
-        { type:'run', minutes:30, speed:9.9, hr:143, note:'5 km non-stop aan doeltempo' },
+        { type:'run', minutes:30, speed:10, hr:143, note:'5 km non-stop aan doeltempo' },
         { type:'rest', minutes:5, speed:5.0, hr:100, note:'genieten' }
       ], title:'5K Finisher'}
     }
