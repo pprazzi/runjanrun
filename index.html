@@ -115,12 +115,8 @@
     font-family: 'Space Grotesk', sans-serif; font-weight: 700;
     font-size: 20px;
   }
-  .week-name {
-    font-size: 12.5px;
-    color: var(--muted);
-    flex: 1;
-  }
   .week-focus {
+    margin-left: auto;
     font-size: 10.5px;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -864,7 +860,6 @@ function renderSelection() {
     card.innerHTML = `
       <div class="week-card-head">
         <div class="week-num">Week ${week.n}</div>
-        <div class="week-name">${week.name}</div>
         <div class="week-focus ${focusClass}">${week.focus}</div>
       </div>
       <div class="session-row" data-week="${week.n}"></div>
